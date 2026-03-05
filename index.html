@@ -4,6 +4,28 @@
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
 <title>DAR LAKBIRA - جلابة وتواب رجالية</title>
+<script type="module">
+  // Import the functions you need from the SDKs you need
+  import { initializeApp } from "https://www.gstatic.com/firebasejs/12.10.0/firebase-app.js";
+  import { getAnalytics } from "https://www.gstatic.com/firebasejs/12.10.0/firebase-analytics.js";
+  // TODO: Add SDKs for Firebase products that you want to use
+  // https://firebase.google.com/docs/web/setup#available-libraries
+
+  // Your web app's Firebase configuration
+  // For Firebase JS SDK v7.20.0 and later, measurementId is optional
+  const firebaseConfig = {
+    apiKey: "AIzaSyA2msXt2cw-yKfMz917Nss-KxjOL1dRjiM",
+    authDomain: "darlakbira-5b688.firebaseapp.com",
+    projectId: "darlakbira-5b688",
+    storageBucket: "darlakbira-5b688.firebasestorage.app",
+    messagingSenderId: "287972516730",
+    appId: "1:287972516730:web:89f6da3dd2f034335cecc3",
+    measurementId: "G-EB756VHPGZ"
+  };
+
+  // Initialize Firebase
+  const app = initializeApp(firebaseConfig);
+  const analytics = getAnalytics(app);
 </script>
 <link rel="preconnect" href="https://fonts.googleapis.com">
 <link href="https://fonts.googleapis.com/css2?family=Amiri:wght@400;700&family=Cairo:wght@300;400;600;700;900&display=swap" rel="stylesheet">
@@ -40,6 +62,65 @@
     pointer-events: none;
     z-index: 1000;
     opacity: 0.4;
+  }
+
+  /* ===== COLLECTION DROPDOWN ===== */
+  .col-dropdown {
+    position: relative;
+    display: inline-block;
+  }
+  .col-dropdown:hover .col-dropdown-menu,
+  .col-dropdown-menu:hover {
+    display: block;
+    opacity: 1;
+    transform: translateY(0);
+    pointer-events: all;
+  }
+  .col-dropdown-menu {
+    display: none;
+    opacity: 0;
+    transform: translateY(-6px);
+    transition: opacity 0.25s, transform 0.25s;
+    pointer-events: none;
+    position: absolute;
+    top: calc(100% + 6px);
+    left: 50%;
+    transform: translateX(-50%) translateY(-6px);
+    min-width: 180px;
+    background: var(--dark2);
+    border: 1px solid rgba(201,168,76,0.25);
+    z-index: 500;
+    padding: 6px 0;
+    box-shadow: 0 16px 40px rgba(0,0,0,0.5);
+  }
+  .col-dropdown:hover .col-dropdown-menu {
+    display: block;
+    opacity: 1;
+    transform: translateX(-50%) translateY(0);
+    pointer-events: all;
+  }
+  .col-dropdown-menu a {
+    display: block;
+    padding: 10px 20px;
+    color: var(--cream2);
+    font-family: 'Cairo', sans-serif;
+    font-size: 0.88rem;
+    font-weight: 600;
+    text-decoration: none;
+    cursor: pointer;
+    transition: background 0.2s, color 0.2s;
+    white-space: nowrap;
+    border-bottom: 1px solid rgba(201,168,76,0.06);
+  }
+  .col-dropdown-menu a:last-child { border-bottom: none; }
+  .col-dropdown-menu a:hover {
+    background: rgba(201,168,76,0.1);
+    color: var(--gold);
+  }
+  .dd-arrow {
+    font-size: 0.7rem;
+    opacity: 0.6;
+    margin-right: 2px;
   }
 
   /* ===== COLLECTION FILTER BUTTONS ===== */
@@ -1017,11 +1098,20 @@
   </div>
 
   <!-- COLLECTION FILTER TABS -->
-  <div style="display:flex;justify-content:center;gap:12px;flex-wrap:wrap;margin-bottom:50px;">
+  <div style="display:flex;justify-content:center;gap:16px;flex-wrap:wrap;margin-bottom:50px;" id="collectionMenu">
     <button onclick="filterCollection('all')" id="filter-all" class="filter-btn filter-active">✦ الكل</button>
-    <button onclick="filterCollection('جبادور')" id="filter-جبادور" class="filter-btn">🧥 جبادور</button>
-    <button onclick="filterCollection('جلابة')" id="filter-جلابة" class="filter-btn">👘 جلابة</button>
-    <button onclick="filterCollection('تواب')" id="filter-تواب" class="filter-btn">👔 تواب</button>
+    <div class="col-dropdown">
+      <button class="filter-btn" id="filter-جبادور" onclick="filterCollection('جبادور')">🧥 جبادور <span class="dd-arrow">▾</span></button>
+      <div class="col-dropdown-menu" id="ddmenu-جبادور"></div>
+    </div>
+    <div class="col-dropdown">
+      <button class="filter-btn" id="filter-جلابة" onclick="filterCollection('جلابة')">👘 جلابة <span class="dd-arrow">▾</span></button>
+      <div class="col-dropdown-menu" id="ddmenu-جلابة"></div>
+    </div>
+    <div class="col-dropdown">
+      <button class="filter-btn" id="filter-تواب" onclick="filterCollection('تواب')">👔 تواب <span class="dd-arrow">▾</span></button>
+      <div class="col-dropdown-menu" id="ddmenu-تواب"></div>
+    </div>
   </div>
 
   <div class="products-grid" id="productsGrid">
@@ -1333,17 +1423,7 @@ const FEATURES_KEY    = 'dlk_features';
 const SETTINGS_KEY    = 'dlk_settings';
 
 // ===== DEFAULT DATA =====
-const defaultProducts = [
-  { id:1, name:'جبادور مغربي فاخر',          category:'جبادور',   price:'450', badge:'الأكثر طلباً', desc:'جبادور كلاسيكي مطرز بخيوط ذهبية، مثالي للمناسبات والأعياد', img:'' },
-  { id:2, name:'جبادور عصري أنيق',           category:'جبادور',   price:'380', badge:'جديد',         desc:'تصميم عصري يجمع بين الأصالة والحداثة، مناسب للخروج اليومي', img:'' },
-  { id:3, name:'جبادور الأفراح والأعراس',    category:'جبادور',   price:'650', badge:'طلب خاص',       desc:'جبادور مطرز يدوياً للأعراس والمناسبات الكبرى، بأقمشة فاخرة', img:'' },
-  { id:4, name:'جلابة مغربية فاخرة',         category:'جلابة',    price:'350', badge:'',             desc:'جلابة كلاسيكية مطرزة بخيوط ذهبية، مثالية للمناسبات والأعياد', img:'' },
-  { id:5, name:'جلابة عصرية أنيقة',          category:'جلابة',    price:'280', badge:'',             desc:'تصميم عصري يجمع بين الأصالة والحداثة، مناسبة للخروج اليومي', img:'' },
-  { id:6, name:'جلابة صيفية خفيفة',          category:'جلابة',    price:'200', badge:'',             desc:'قماش خفيف وهوائي لأجواء الصيف، بألوان متعددة وتصاميم مميزة', img:'' },
-  { id:7, name:'ثوب رجالي فاخر',             category:'تواب',     price:'220', badge:'جديد',         desc:'ثوب أبيض ناصع بقماش عالي الجودة، مريح وأنيق لجميع المناسبات', img:'' },
-  { id:8, name:'برنوس رجالي صوف',            category:'تواب',     price:'600', badge:'',             desc:'برنوس مغربي أصيل من الصوف الطبيعي، دافئ وفاخر لفصل الشتاء', img:'' },
-  { id:9, name:'قندريسي رجالي أصيل',         category:'تواب',     price:'180', badge:'',             desc:'قندريسي مغربي كلاسيكي خفيف ومريح، مناسب للاستخدام اليومي والصلاة', img:'' },
-];
+const defaultProducts = [];
 
 const defaultFeatures = [
   { id:1, icon:'🧵', title:'أقمشة فاخرة',      text:'نستخدم أجود أنواع الأقمشة المغربية والمستوردة لضمان راحة وأناقة لا مثيل لهما', visible:true },
@@ -1384,6 +1464,36 @@ function renderFeatures() {
     </div>`).join('');
 }
 
+// ===== POPULATE DROPDOWN MENUS =====
+function buildDropdowns() {
+  ['جبادور','جلابة','تواب'].forEach(cat => {
+    const menu = document.getElementById('ddmenu-' + cat);
+    if (!menu) return;
+    const items = products.filter(p => p.category === cat);
+    if (!items.length) {
+      menu.innerHTML = '<span style="display:block;padding:10px 20px;color:rgba(240,230,204,0.3);font-size:0.82rem;font-family:Cairo,sans-serif;">لا توجد منتجات</span>';
+    } else {
+      menu.innerHTML = items.map(p => 
+        `<a onclick="filterAndScroll('${cat}','${p.id}')">${p.name}</a>`
+      ).join('');
+    }
+  });
+}
+
+function filterAndScroll(cat, id) {
+  filterCollection(cat);
+  setTimeout(() => {
+    const cards = document.querySelectorAll('.product-card');
+    cards.forEach(card => {
+      if (card.dataset.id == id) {
+        card.scrollIntoView({ behavior: 'smooth', block: 'center' });
+        card.style.boxShadow = '0 0 0 2px var(--gold)';
+        setTimeout(() => card.style.boxShadow = '', 1500);
+      }
+    });
+  }, 100);
+}
+
 // ===== COLLECTION FILTER =====
 let activeFilter = 'all';
 function filterCollection(cat) {
@@ -1405,7 +1515,7 @@ function renderProducts() {
     return;
   }
   grid.innerHTML = filtered.map(p => `
-    <div class="product-card" style="opacity:0;animation:fadeUp 0.6s ease both;">
+    <div class="product-card" data-id="${p.id}" style="opacity:0;animation:fadeUp 0.6s ease both;">
       <div style="position:relative;">
         ${p.badge ? `<div class="product-badge">${p.badge}</div>` : ''}
         ${p.img
@@ -1426,6 +1536,7 @@ function renderProducts() {
     grid.querySelectorAll('.product-card').forEach((el,i) => { el.style.animationDelay=(i*0.08)+'s'; el.style.opacity='1'; });
   }, 50);
   updateOrderSelect();
+  buildDropdowns();
 }
 
 function updateOrderSelect() {
